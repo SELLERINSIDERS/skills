@@ -96,9 +96,9 @@ Campaign 1: Sales — Scaling (80% budget, CBO)
 └── Ad Set: Broad US — Purchase
     └── Top 8-10 proven performers
 
-Campaign 2: Sales — Testing (20% budget, ABO or CBO)
-└── Ad Set: Broad US — Purchase
-    └── 5-10 new creatives being tested weekly
+Campaign 2: Sales — Testing (20% budget, ABO)
+└── 3-4 Ad Sets × 3 ads each (Broad US, ATC Optimization)
+    └── Grouped by theme/persona — equal budget per ad set
 ```
 
 ### $500+/day — Add Advantage+ Shopping
@@ -189,3 +189,84 @@ Example: `CADENCE #04 — Looking for a different approa [Problem Aware]`
 4. **Direct-to-PDP (Ad #14)** was the only converting path — higher CPC ($3.14) but actual purchases
 5. **Copy mismatch** between Wave 1 ad tone and neutral advertorial tone was likely a factor
 6. **Wave 2 fix**: persona-based, editorial-tone copy that mirrors the advertorial voice
+
+## Creative Testing Methodology
+
+### ABO vs CBO — When to Use Each
+
+| Scenario | Use | Why |
+|----------|-----|-----|
+| **Testing new creatives** | ABO | Equal budget per ad set — every creative gets a fair test |
+| **Scaling proven winners** | CBO | Algorithm concentrates budget on best performers |
+| **New ad account / product** | ABO first | Need data on what works before algorithm can optimize |
+| **Mature account with winners** | CBO | Let algorithm exploit known winners |
+
+**CBO budget concentration is a feature, not a bug** — it's designed to find and scale the best performers. But this means new/untested creatives will get starved of impressions. For creative testing, CBO is the wrong tool.
+
+### ATC vs Purchase Optimization
+
+The learning phase requires ~50 optimization events per ad set per week. At low budgets:
+- **Purchase optimization**: 1-2 purchases/week → never exits learning phase → algorithm can't optimize
+- **ATC optimization**: 3-5x more events → exits learning faster → algorithm learns what converts
+
+**Start with ATC optimization until you have consistent purchase volume**, then switch to Purchase.
+
+### Standard vs Dynamic Creatives
+
+**Dynamic Creative (`is_dynamic_creative: true`):**
+- Meta tests all combinations of text + headline + image automatically
+- Limit: **1 ad per ad set** (Meta platform constraint)
+- Best for: testing copy combinations within a single visual
+
+**Standard Creatives (no dynamic creative):**
+- Each ad has a single primary text + headline + description
+- **Multiple ads per ad set** allowed (3 recommended)
+- Best for: testing different visuals/angles side by side
+
+**Recommendation for testing:** Use standard creatives with 3 ads per ad set. This gives you direct comparison data between different creative approaches within the same budget.
+
+### Ad Set Grouping Strategy
+
+Group similar-type ads together so budget doesn't skew toward one type:
+- **Don't mix proven performers with untested ads** — proven ads will eat the budget
+- **Group by persona/theme** — e.g., all "comparison shopper" angles together
+- **3 ads per ad set** — enough variety for testing, not so many that budget fragments
+
+Example structure:
+```
+Campaign (ABO, $200/day)
+├── Ad Set 1: Proven Converters ($50/day) — 3 ads with prior ATC signals
+├── Ad Set 2: Comparison Angle ($50/day) — 3 ads testing comparison hooks
+├── Ad Set 3: Emotional Angle ($50/day) — 3 ads testing emotional hooks
+└── Ad Set 4: Authority/Ranking ($50/day) — 3 ads testing authority hooks
+```
+
+### Start Time — Avoid Mid-Day Launches
+
+**Always set `start_time` to midnight (local timezone) when creating ad sets.** If launched mid-day, Meta tries to spend the full daily budget in the remaining hours, causing aggressive spend with poor optimization. The `start_time` parameter must be set at ad set creation time — it cannot be updated after creation.
+
+### Kill Criteria (After 7 Days)
+
+| Condition | Action |
+|-----------|--------|
+| 2x target CPA with 0 conversions | Kill (pause ad) |
+| CTR < 0.90% after 1,000+ impressions | Kill |
+| Spend > $50 with 0 ATCs | Kill |
+| ATC but no purchases after 14 days | Reduce budget or kill |
+
+**Never judge before 7 days** — Meta's attribution window is 7 days and the algorithm needs time to optimize.
+
+### Batch Rotation
+
+1. **Batch 1**: Launch 12 priority ads across 4 ad sets
+2. **After 7 days**: Analyze performance, kill underperformers
+3. **Batch 2**: Rotate in replacement ads (from reserve pool)
+4. **Repeat**: Keep best 2-3 per ad set, rotate weakest slot
+
+### Graduation Process: ABO → CBO
+
+When a creative proves itself in the ABO testing campaign:
+1. **Criteria**: 7+ days of data, consistent ATCs, positive ROAS trajectory
+2. **Move to CBO scaling campaign**: Create new ad with same creative ID in the CBO campaign
+3. **Keep testing in ABO**: Continue rotating new creatives
+4. **Never mix testing and scaling** in the same campaign

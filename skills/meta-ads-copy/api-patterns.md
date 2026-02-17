@@ -68,6 +68,61 @@ creative = meta_post(f"{AD_ACCOUNT_ID}/adcreatives", {
 **CRITICAL:** `asset_feed_spec` and full `object_story_spec` (with `link_data`) are **MUTUALLY EXCLUSIVE**. When using `asset_feed_spec`, `object_story_spec` must contain ONLY `{"page_id": PAGE_ID}`.
 
 ### Step 3: Create the Ad
+
+**For non-dynamic-creative ad sets (multiple ads per ad set):**
+
+Creating an ad directly with a flexible creative in a non-dynamic ad set fails with "Cannot Create Dynamic Creative ad In Non-Dynamic Creative Ad Set." Use the two-step workaround:
+
+```python
+# Step 3a: Create ad with a simple creative first
+simple_creative = meta_post(f"{AD_ACCOUNT_ID}/adcreatives", {
+    "name": f"CADENCE #XX — {headline} (placeholder)",
+    "object_story_spec": json.dumps({
+        "page_id": PAGE_ID,
+        "link_data": {
+            "image_hash": image_hash,
+            "link": destination_url,
+            "message": primary_texts[0],  # use first text as placeholder
+            "name": headlines[0],
+            "description": description,
+            "caption": "trustedselections.org",
+            "call_to_action": {"type": "LEARN_MORE", "value": {"link": destination_url}},
+        },
+    }),
+})
+
+ad = meta_post(f"{AD_ACCOUNT_ID}/ads", {
+    "name": f"CADENCE #XX — {headline} [{stage}]",
+    "adset_id": ADSET_ID,
+    "creative": json.dumps({"creative_id": simple_creative["id"]}),
+    "status": "PAUSED",
+})
+
+# Step 3b: Create flexible creative and UPDATE the ad
+flexible_creative = meta_post(f"{AD_ACCOUNT_ID}/adcreatives", {
+    "name": f"CADENCE #XX — {headline}",
+    "asset_feed_spec": json.dumps({
+        "images": [{"hash": image_hash}],
+        "bodies": [{"text": t} for t in primary_texts],
+        "titles": [{"text": t} for t in headlines],
+        "descriptions": [{"text": description}],
+        "ad_formats": ["SINGLE_IMAGE"],
+        "call_to_action_types": ["LEARN_MORE"],
+        "link_urls": [{"website_url": destination_url, "display_url": "trustedselections.org"}],
+    }),
+    "object_story_spec": json.dumps({"page_id": PAGE_ID}),
+})
+
+# Update the ad to use the flexible creative
+meta_post(f"{ad['id']}", {
+    "creative": json.dumps({"creative_id": flexible_creative["id"]}),
+})
+```
+
+**Key discovery:** Ad CREATION with flexible creatives fails in non-dynamic ad sets, but ad UPDATE works. This gives you multiple ads per ad set AND multiple text/headline options per ad.
+
+**For dynamic-creative ad sets (1 ad per ad set):**
+
 ```python
 ad = meta_post(f"{AD_ACCOUNT_ID}/ads", {
     "name": f"CADENCE #XX — {headline} [{stage}]",
@@ -164,7 +219,18 @@ Set the Instagram account at the **ad set level** (applies to ALL ads):
 meta_post(f"{adset_id}", {"instagram_actor_id": "INSTAGRAM_ACCOUNT_ID"})
 ```
 
-Note: Setting IG at the creative level uses `instagram_user_id` in `object_story_spec`, but may require `pages_read_engagement` permission. Ad set level is simpler and ensures consistency.
+Note: `instagram_actor_id` is a **write-only field** — the API returns `success: true` but GET requests won't show it. It IS set despite not appearing in reads. Setting IG at the creative level uses `instagram_user_id` in `object_story_spec`, but may require `pages_read_engagement` permission. Ad set level is simpler and ensures consistency.
+
+## Creation-Only Fields (Cannot Be Updated)
+
+These ad set fields MUST be set at creation time — they cannot be changed after:
+
+| Field | Notes |
+|-------|-------|
+| `is_dynamic_creative` | Must be set at creation. Cannot convert ad set between dynamic/standard. |
+| `start_time` | Must be set at creation. Error: "Start Time Can't Be Edited" if ad set has started. |
+
+**Always set `start_time` to midnight local timezone** when creating ad sets. Mid-day launches cause Meta to spend the full daily budget in remaining hours.
 
 ## Site Links
 Additional links shown below the ad:

@@ -119,14 +119,46 @@ For API code patterns, see `api-patterns.md`.
 
 ## Copy Generation Workflow
 
+### Required Frameworks
+
+All new ad copy MUST be generated using:
+
+1. **Titan Copy Framework** — neuroscience-based direct response system
+   - Source: `shared-company-brain/marketing/TITAN-FRAMEWORK.md`
+   - Full reference: `Maya's Workspace/maya-workspace/brand/TITAN-COPY-COMPLETE.md`
+   - Core sequence: AGITATE → EMOTIONALIZE → RATIONALIZE
+   - Use Titan Shield zones for compliance (Tier 2: Profit Zone for supplement ads)
+
+2. **10-Expert Panel Review** — mandatory quality gate before publishing
+   - Source: `shared-company-brain/skills/meta-ad-copy/SKILL.md`
+   - Panel: Ogilvy, Schwartz, Halbert, Hopkins, Sugarman, Cialdini, Wiebe, Belgray, Georgi, Albuquerque
+   - Minimum score: 90/100 average across all experts
+   - Process: Write draft → Run panel → If <90: revise and re-run → If ≥90: approved
+
+3. **5-Variation Persona System** — for each creative concept, generate:
+   - Variation 1: General/Broad appeal
+   - Variations 2-5: Research-based personas (from Reddit, Amazon reviews, health forums)
+   - Each variation must differ in: hook type, pain point, emotional angle, value prop emphasis, tone
+
+### Workflow Steps
+
 1. **Read the advertorial** — understand what users see after clicking
-2. **Assign personas** — map each ad to a persona angle
-3. **Write 3 primary texts per ad** — short (1-2 sentences), medium (3-4 sentences), long (4-6 sentences)
-4. **Write 3 headlines per ad** — each a different hook, max ~40 chars
-5. **Write 1 description per ad** — summarizes the comparison angle
-6. **Run compliance check** — scan for banned claims, superiority patterns, Personal Attributes trap
-7. **Create creatives via API** — use asset_feed_spec for flexible testing
+2. **Research personas** — pull real customer language from Reddit, Amazon reviews, forums
+3. **Assign personas** — map each ad to a persona angle
+4. **Write copy using Titan framework** — 3 primary texts per ad (short/medium/long), 3 headlines, 1 description
+5. **Run 10-Expert Panel** — score each ad's copy, revise until 90+ average
+6. **Run compliance check** — Titan Shield zones + FDA/FTC/Meta policy scan
+7. **Create ads via API** — two-step process for flexible creatives (see `api-patterns.md`)
 8. **Save state** — track creative IDs for future updates
+
+### Ad Creation — Flexible Creatives in Multi-Ad Ad Sets
+
+Each ad should have 3 primary texts + 3 headlines + 1 description. For ad sets with multiple ads (non-dynamic creative), use the two-step process:
+
+1. **Create ad** with a simple creative (`object_story_spec` + `link_data`)
+2. **Update ad** to swap in a flexible creative (`asset_feed_spec` with 3 texts + 3 headlines)
+
+Ad CREATION with `asset_feed_spec` fails in non-dynamic ad sets, but ad UPDATE works. See `api-patterns.md` for full code pattern.
 
 ## Performance Learnings (Wave 1: Feb 8-16, 2026)
 

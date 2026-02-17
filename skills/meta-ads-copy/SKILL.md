@@ -152,6 +152,17 @@ meta_post(f"{ad_id}", {
 7. **Create creatives via API** — use asset_feed_spec for flexible testing
 8. **Save state** — track creative IDs for future updates
 
+## Performance Learnings (Wave 1: Feb 8-16, 2026)
+
+Use these to inform copy decisions for future waves:
+
+- **Problem Aware angle** had highest CTR (14.84%) — curiosity hooks like "Exploring better options" resonate
+- **High CTR ≠ conversions** — Ad #05 consumed 37% of budget with 0 purchases. Algorithm optimized for clicks, not purchases
+- **Direct-to-PDP (Most Aware)** generated the only purchase — "Calm+Rest by Evolance" with Shop Now CTA
+- **Advertorial→PDP conversion was 4.9%** (target >25%) — Wave 1 copy had tone mismatch with neutral advertorial
+- **Wave 2 copy v2 fix**: persona-based, editorial-tone copy that mirrors the advertorial's voice. No product reveals, no pricing, no melatonin attacks
+- Always validate new copy against the advertorial content before publishing
+
 ## Rate Limits
 
 - Development access tier: **5-second delays** between API calls

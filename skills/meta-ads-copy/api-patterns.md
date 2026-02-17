@@ -8,6 +8,15 @@
 - **Error 80004**: Wait 60+ seconds, retry up to 3 times
 - **Usage header**: Check `x-business-use-case-usage` for rate limit stats
 
+### .env Loading — Always Use Absolute Path
+```python
+ENV_PATH = Path(__file__).resolve().parent / ".env"
+load_dotenv(ENV_PATH)
+if not os.getenv("META_ACCESS_TOKEN"):
+    raise RuntimeError(f"META_ACCESS_TOKEN not found. Check {ENV_PATH}")
+```
+**Never use bare `load_dotenv()`** — it only searches the current working directory, which may differ from the script location. This causes silent failures where the token appears expired but is actually just not loaded.
+
 ## Creating Ads
 
 ### Step 1: Upload Image
